@@ -1,0 +1,27 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Device {
+  id        String      @id @default(cuid())
+  name      String
+  ip        String?
+  mac       String?
+  kind      String // "pc" | "router" | "pi" | ...
+  createdAt DateTime    @default(now())
+  logs      ActionLog[]
+}
+
+model ActionLog {
+  id        String   @id @default(cuid())
+  deviceId  String
+  device    Device   @relation(fields: [deviceId], references: [id])
+  action    String // "wol_sent" | "wol_ack" | "rdp_opened" | ...
+  createdAt DateTime @default(now())
+}
